@@ -19,7 +19,7 @@ public:
     Graph(int verticies);
     void addEdge(int a, int b, int weight);
     void printGraph() const;
-    void bellmandFord(int start) const;
+    void bellmandFord(int start, vector<int>& heuristic) const;
     void aStar(int start, int goal, const vector<int>& heuristic) const;
 
     const int V;  //liczba wierzcholkow
@@ -67,7 +67,7 @@ void::Graph::printGraph() const
     }
 }
 
-void::Graph::bellmandFord(int start) const 
+void::Graph::bellmandFord(int start, vector<int>& heuristic) const 
 {
     vector<int> distance(V, numeric_limits<int>::max());
     distance[start] = 0;
@@ -99,7 +99,8 @@ void::Graph::bellmandFord(int start) const
     // Wypisanie wyników
     cout << "Wierzchołek startowy: " << start << endl;
     for (int i = 0; i < V; ++i) {
-        cout << "Odległość do wierzchołka " << i << " wynosi " << distance[i] << endl;
+        heuristic.push_back(distance[i]);
+        //cout << "Odległość do wierzchołka " << i << " wynosi " << distance[i] << endl;
     }
 }
 
@@ -291,8 +292,10 @@ Graph getGraph(int size)
 int main()
 {
     setlocale(LC_ALL, "polish");
-    int testSize = 1000;
-    int target = 768;
+    int testSize = 3000;
+    int target = 1500;
+    vector<int> heuristic;
+    heuristic.reserve(testSize);
     /*Graph g(6);
     g.addEdge(0, 1, 7);
     g.addEdge(0, 2, 9);
@@ -310,11 +313,11 @@ int main()
     DisplayingText("DJIKSTRA");
     Djikstra(g, 0, target);
 
-    /*DisplayingText("BELLMAN-FORD");
-    g.bellmandFord(0);*/
+    DisplayingText("BELLMAN-FORD");
+    g.bellmandFord(0, heuristic);
 
     DisplayingText("A*");
-    vector<int> heuristic = {};
+    
     g.aStar(0, target, heuristic);
 
     return 0;
