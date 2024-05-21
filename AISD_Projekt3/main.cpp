@@ -211,16 +211,12 @@ void Djikstra(Graph g, int start, int end)
 
     cout << "Odleglosc od startu do celu: "<< weights[end]<<endl;
 
-    int n = end;
     cout << "Droga do celu: ";
-    cout << n;
-    do
-    {
-        n = parent[n];
 
-        cout << "<-" << n;
-        
-    } while (n != -1);
+    for (int i = end; i!=-1 ; i=parent[i])
+    {
+        cout << i<<" ";
+    }
 
 }
 
@@ -292,23 +288,13 @@ Graph getGraph(int size)
 int main()
 {
     setlocale(LC_ALL, "polish");
-    int testSize = 3000;
-    int target = 1500;
+    int testSize = 5000;
+    int target = 2500;
     vector<int> heuristic;
     heuristic.reserve(testSize);
-    /*Graph g(6);
-    g.addEdge(0, 1, 7);
-    g.addEdge(0, 2, 9);
-    g.addEdge(0, 5, 14);
-    g.addEdge(1, 2, 10);
-    g.addEdge(1, 3, 15);
-    g.addEdge(2, 3, 11);
-    g.addEdge(2, 5, 2);
-    g.addEdge(3, 4, 6);
-    g.addEdge(4, 5, 9);*/
+
 
     Graph g = getGraph(testSize);
-    //g.printGraph();
 
     DisplayingText("DJIKSTRA");
     Djikstra(g, 0, target);
