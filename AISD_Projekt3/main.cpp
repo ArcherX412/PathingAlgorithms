@@ -19,7 +19,7 @@ public:
     Graph(int verticies);
     void addEdge(int a, int b, int weight);
     void printGraph() const;
-    void bellmandFord(int start, vector<int>& heuristic) const;
+    void bellmanFord(int start,int target, vector<int>& heuristic) const;
     void aStar(int start, int goal, const vector<int>& heuristic) const;
 
     const int V;  //liczba wierzcholkow
@@ -67,9 +67,9 @@ void::Graph::printGraph() const
     }
 }
 
-void::Graph::bellmandFord(int start, vector<int>& heuristic) const 
-{
+void::Graph::bellmanFord(int start, int target, vector<int>& heuristic) const {
     vector<int> distance(V, numeric_limits<int>::max());
+    vector<int> predecessor(V, -1); // Wektor poprzedników
     distance[start] = 0;
 
     for (int i = 1; i <= V - 1; ++i) {
@@ -79,6 +79,7 @@ void::Graph::bellmandFord(int start, vector<int>& heuristic) const
                 int weight = neighbor.second;
                 if (distance[u] != numeric_limits<int>::max() && distance[u] + weight < distance[v]) {
                     distance[v] = distance[u] + weight;
+                    predecessor[v] = u; // Aktualizacja poprzednika
                 }
             }
         }
@@ -101,6 +102,24 @@ void::Graph::bellmandFord(int start, vector<int>& heuristic) const
     for (int i = 0; i < V; ++i) {
         heuristic.push_back(distance[i]);
         //cout << "Odległość do wierzchołka " << i << " wynosi " << distance[i] << endl;
+    }
+
+    // Wypisanie ścieżki do celu
+    if (distance[target] == numeric_limits<int>::max()) {
+        cout << "Nie ma ścieżki do wierzchołka " << target << endl;
+    }
+    else {
+        cout << "Najkrótsza ścieżka do wierzchołka " << target << ": ";
+        vector<int> path;
+        for (int at = target; at != -1; at = predecessor[at]) {
+            path.push_back(at);
+        }
+        reverse(path.begin(), path.end());
+        for (size_t i = 0; i < path.size(); ++i) {
+            cout << path[i];
+            if (i < path.size() - 1) cout << " -> ";
+        }
+        cout << endl;
     }
 }
 
@@ -288,8 +307,8 @@ Graph getGraph(int size)
 int main()
 {
     setlocale(LC_ALL, "polish");
-    int testSize = 5000;
-    int target = 2500;
+    int testSize = 1000;
+    int target = 500;
     vector<int> heuristic;
     heuristic.reserve(testSize);
 
@@ -300,7 +319,7 @@ int main()
     Djikstra(g, 0, target);
 
     DisplayingText("BELLMAN-FORD");
-    g.bellmandFord(0, heuristic);
+    g.bellmanFord(0,target, heuristic);
 
     DisplayingText("A*");
     
