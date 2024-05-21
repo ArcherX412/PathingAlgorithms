@@ -8,5 +8,5 @@ using namespace std;
 
 void DisplayingText(string t)
 {
-	cout << "----------------" << t << "----------------";
+	cout <<"\n----------------" << t << "----------------\n\n";
 }
