@@ -115,9 +115,8 @@ void::Graph::bellmanFord(int start, int target, vector<int>& heuristic) const {
             }
         }
     }
-
+    double time = timer.elapsed();
     // Wypisanie wyników
-    cout << "Wierzchołek startowy: " << start << endl;
     for (int i = 0; i < V; ++i) {
         heuristic.push_back(distance[i]);
         //cout << "Odległość do wierzchołka " << i << " wynosi " << distance[i] << endl;
@@ -128,7 +127,7 @@ void::Graph::bellmanFord(int start, int target, vector<int>& heuristic) const {
         cout << "Nie ma ścieżki do wierzchołka " << target << endl;
     }
     else {
-        cout << "Najkrótsza ścieżka do wierzchołka " << target << ": ";
+        cout << "Droga do celu: ";
         vector<int> path;
         for (int at = target; at != -1; at = predecessor[at]) {
             path.push_back(at);
@@ -141,8 +140,8 @@ void::Graph::bellmanFord(int start, int target, vector<int>& heuristic) const {
         cout << endl;
     }
 
-    double time = timer.elapsed();
-    cout << endl << "Czas wykonania: " << time << " sekund\n";
+    cout << "Odleglosc od startu do celu: " << distance[target]<<endl;
+    cout <<"Czas wykonania: " << time << " sekund\n";
 }
 
 void Graph::aStar(int start, int goal, const vector<int>& heuristic) const {
@@ -168,19 +167,21 @@ void Graph::aStar(int start, int goal, const vector<int>& heuristic) const {
         if (current == goal) {
             double time = timer.elapsed();
 
-            cout << "Ścieżka znaleziona: ";
+            cout << "Droga do celu: ";
             vector<int> path;
             for (int at = goal; at != -1; at = previous[at]) {
                 path.push_back(at);
             }
             reverse(path.begin(), path.end());
-            for (int vertex : path) {
-                cout << vertex << " ";
+            for (int i = 0; i < path.size(); i++)
+            {
+                cout << path[i];
+                if (i < path.size() - 1) cout << " -> ";
             }
-            cout <<endl<<distance[goal]<<endl;
+            cout <<endl<<"Odleglosc od startu do celu: "<< distance[goal] << endl;
 
             
-            cout << endl << "Czas wykonania: " << time << " sekund\n";
+            cout <<"Czas wykonania: " << time << " sekund\n";
 
             return;
         }
@@ -261,17 +262,23 @@ void Djikstra(Graph g, int start, int end)
         }
     }
 
-    cout << "Odleglosc od startu do celu: "<< weights[end]<<endl;
-
     cout << "Droga do celu: ";
-
-    for (int i = end; i!=-1 ; i=parent[i])
-    {
-        cout << i<<" ";
+    vector<int> path;
+    for (int at = end; at != -1; at = parent[at]) {
+        path.push_back(at);
     }
+    reverse(path.begin(), path.end());
+    for (size_t i = 0; i < path.size(); ++i) {
+        cout << path[i];
+        if (i < path.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+
+
+    cout <<endl<< "Odleglosc od startu do celu: " << weights[end] << endl;
 
     double time = timer.elapsed();
-    cout <<endl<< "Czas wykonania: " << time << " sekund\n";
+    cout << "Czas wykonania: " << time << " sekund\n";
 }
 
 Graph getGraph(int size)
@@ -338,27 +345,33 @@ Graph getGraph(int size)
     return g;
 }
 
+void Test(int size)
+{
+    vector<int> heuristic;
+    heuristic.reserve(size);
+
+    Graph g = getGraph(size);
+    
+    DisplayingText(to_string(size));
+
+    DisplayingText("BELLMAN-FORD");
+    g.bellmanFord(0, size/2, heuristic);
+
+    DisplayingText("A*");
+
+    g.aStar(0, size / 2, heuristic);
+
+    DisplayingText("DJIKSTRA");
+    Djikstra(g, 0, size / 2);
+}
 
 int main()
 {
     setlocale(LC_ALL, "polish");
-    int testSize = 10000;
-    int target = 5000;
-    vector<int> heuristic;
-    heuristic.reserve(testSize);
 
-
-    Graph g = getGraph(testSize);
-
-    DisplayingText("DJIKSTRA");
-    Djikstra(g, 0, target);
-
-    DisplayingText("BELLMAN-FORD");
-    g.bellmanFord(0,target, heuristic);
-
-    DisplayingText("A*");
-    
-    g.aStar(0, target, heuristic);
+    Test(100);
+    Test(500);
+    Test(1000);
 
     return 0;
 }
