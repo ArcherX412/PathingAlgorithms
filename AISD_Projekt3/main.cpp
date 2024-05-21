@@ -1,17 +1,33 @@
 ﻿#include <iostream>
-#include <string>
 #include "utilities.hpp"
 #include <vector>
 #include <list>
-#include <utility>
-#include <math.h>
 #include <limits>
 #include <queue>
 #include <random>
+#include <chrono>
+#include <iomanip>
 
 
 using namespace std;
 
+class Timer {
+private:
+    using clock_t = std::chrono::high_resolution_clock;
+    using second_t = std::chrono::duration<double, std::ratio<1>>;
+    std::chrono::time_point<clock_t> m_start_time;
+
+public:
+    Timer() : m_start_time(clock_t::now()) {}
+
+    void reset() {
+        m_start_time = clock_t::now();
+    }
+
+    double elapsed() const {
+        return std::chrono::duration_cast<second_t>(clock_t::now() - m_start_time).count();
+    }
+};
 
 class Graph {
 
@@ -68,6 +84,9 @@ void::Graph::printGraph() const
 }
 
 void::Graph::bellmanFord(int start, int target, vector<int>& heuristic) const {
+
+    Timer timer;
+
     vector<int> distance(V, numeric_limits<int>::max());
     vector<int> predecessor(V, -1); // Wektor poprzedników
     distance[start] = 0;
@@ -121,9 +140,15 @@ void::Graph::bellmanFord(int start, int target, vector<int>& heuristic) const {
         }
         cout << endl;
     }
+
+    double time = timer.elapsed();
+    cout << endl << "Czas wykonania: " << time << " sekund\n";
 }
 
 void Graph::aStar(int start, int goal, const vector<int>& heuristic) const {
+
+    Timer timer;
+
     vector<int> distance(V, numeric_limits<int>::max());
     distance[start] = 0;
     vector<int> previous(V, -1);
@@ -141,6 +166,8 @@ void Graph::aStar(int start, int goal, const vector<int>& heuristic) const {
         openSet.pop();
 
         if (current == goal) {
+            double time = timer.elapsed();
+
             cout << "Ścieżka znaleziona: ";
             vector<int> path;
             for (int at = goal; at != -1; at = previous[at]) {
@@ -151,6 +178,10 @@ void Graph::aStar(int start, int goal, const vector<int>& heuristic) const {
                 cout << vertex << " ";
             }
             cout <<endl<<distance[goal]<<endl;
+
+            
+            cout << endl << "Czas wykonania: " << time << " sekund\n";
+
             return;
         }
 
@@ -196,6 +227,8 @@ int findCheapestNode_Djikstra(Graph g, int* weights,bool* explored)
 
 void Djikstra(Graph g, int start, int end)
 {
+    Timer timer;
+
     int* weights = new int[g.V];
     bool* explored = new bool[g.V];
     int* parent = new int[g.V];
@@ -237,6 +270,8 @@ void Djikstra(Graph g, int start, int end)
         cout << i<<" ";
     }
 
+    double time = timer.elapsed();
+    cout <<endl<< "Czas wykonania: " << time << " sekund\n";
 }
 
 Graph getGraph(int size)
@@ -307,8 +342,8 @@ Graph getGraph(int size)
 int main()
 {
     setlocale(LC_ALL, "polish");
-    int testSize = 1000;
-    int target = 500;
+    int testSize = 10000;
+    int target = 5000;
     vector<int> heuristic;
     heuristic.reserve(testSize);
 
