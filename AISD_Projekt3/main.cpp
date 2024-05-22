@@ -7,6 +7,7 @@
 #include <random>
 #include <chrono>
 #include <iomanip>
+#include <set>
 
 
 using namespace std;
@@ -35,6 +36,7 @@ public:
     Graph(int verticies);
     void addEdge(int a, int b, int weight);
     void printGraph() const;
+    void dijkstra(int start, int goal) const;
     void bellmanFord(int start,int target, vector<int>& heuristic) const;
     void aStar(int start, int goal, const vector<int>& heuristic) const;
 
@@ -210,6 +212,57 @@ void Graph::aStar(int start, int goal, const vector<int>& heuristic) const {
     cout << "Ścieżka nie została znaleziona." << endl;
 }
 
+void Graph::dijkstra(int start, int goal) const {
+
+    Timer timer;
+    vector<int> dist(V, numeric_limits<int>::max());
+    vector<int> prev(V, -1); // przechowywanie poprzedników
+    dist[start] = 0;
+
+    set<pair<int, int>> setds;
+    setds.insert(make_pair(0, start));
+
+    while (!setds.empty()) {
+        pair<int, int> tmp = *(setds.begin());
+        setds.erase(setds.begin());
+
+        int u = tmp.second;
+
+        for (const auto& i : adjacentVerticies[u]) {
+            int v = i.first;
+            int weight = i.second;
+
+            if (dist[v] > dist[u] + weight) {
+                if (dist[v] != numeric_limits<int>::max()) {
+                    setds.erase(setds.find(make_pair(dist[v], v)));
+                }
+
+                dist[v] = dist[u] + weight;
+                prev[v] = u; // ustawienie poprzednika
+                setds.insert(make_pair(dist[v], v));
+            }
+        }
+    }
+
+    
+        
+
+    double time = timer.elapsed();
+    cout << "Odleglosc od startu do celu: "<<dist[goal]<<endl;
+
+    vector<int> path;
+    for (int at = goal; at != -1; at = prev[at])
+        path.push_back(at);
+    reverse(path.begin(), path.end());
+    cout << "Droga do celu: ";
+    for (size_t i = 0; i < path.size(); ++i) {
+        if (i != 0) cout << " -> ";
+        cout << path[i];
+    }
+
+    cout << "\nCzas wykonania: " << time<< " sekund\n";
+}
+
 int findCheapestNode_Djikstra(Graph g, int* weights,bool* explored)
 {
     int node = 0;
@@ -361,17 +414,30 @@ void Test(int size)
 
     g.aStar(0, size / 2, heuristic);
 
-    DisplayingText("DJIKSTRA");
-    Djikstra(g, 0, size / 2);
+    //DisplayingText("DJIKSTRA");
+    //Djikstra(g, 0, size / 2);
+
+    DisplayingText("DJIKSTRA2");
+    g.dijkstra(0, size / 2);
 }
 
 int main()
 {
     setlocale(LC_ALL, "polish");
 
-    Test(100);
-    Test(500);
-    Test(1000);
+
+    //Test(100);
+    //Test(500);
+    //Test(1000);
+    //Test(2000);
+    //Test(4000);
+    //Test(10000);
+    //Test(20000);
+
+    Graph g = getGraph(1000000);
+    cout << "NOW" << endl;
+    g.dijkstra(0, 500000);
+
 
     return 0;
 }
