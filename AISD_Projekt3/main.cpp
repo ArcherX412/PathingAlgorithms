@@ -263,76 +263,6 @@ void Graph::dijkstra(int start, int goal) const {
     cout << "\nCzas wykonania: " << time<< " sekund\n";
 }
 
-int findCheapestNode_Djikstra(Graph g, int* weights,bool* explored)
-{
-    int node = 0;
-    int cost = 100000;
-    for (int v = 0; v < g.V; v++)
-    {
-        if (weights[v] < cost && explored[v] == false)
-        {
-            cost = weights[v];
-            node = v;
-        }
-    }
-    return node;
-    
-}
-
-void Djikstra(Graph g, int start, int end)
-{
-    Timer timer;
-
-    int* weights = new int[g.V];
-    bool* explored = new bool[g.V];
-    int* parent = new int[g.V];
-
-    for (int v = 0; v < g.V; v++)
-    {
-        weights[v] = 100000;
-        explored[v] = false;
-    }
-
-    weights[start] = 0;
-    parent[start] = -1;
-
-    int currentNode = 0;
-
-    for (int v = 0; v < g.V; v++)
-    {
-        currentNode = findCheapestNode_Djikstra(g, weights, explored);
-        explored[currentNode] = true;
-        
-        int cost = weights[currentNode];
-        for (const auto& neighbor : g.adjacentVerticies[currentNode])
-        {
-            int newCost = cost + neighbor.second;
-            if (newCost < weights[neighbor.first])
-            {
-                weights[neighbor.first] = newCost;
-                parent[neighbor.first] = currentNode;
-            }
-        }
-    }
-
-    cout << "Droga do celu: ";
-    vector<int> path;
-    for (int at = end; at != -1; at = parent[at]) {
-        path.push_back(at);
-    }
-    reverse(path.begin(), path.end());
-    for (size_t i = 0; i < path.size(); ++i) {
-        cout << path[i];
-        if (i < path.size() - 1) cout << " -> ";
-    }
-    cout << endl;
-
-
-    cout <<endl<< "Odleglosc od startu do celu: " << weights[end] << endl;
-
-    double time = timer.elapsed();
-    cout << "Czas wykonania: " << time << " sekund\n";
-}
 
 Graph getGraph(int size)
 {
@@ -407,6 +337,9 @@ void Test(int size)
     
     DisplayingText(to_string(size));
 
+    DisplayingText("DJIKSTRA");
+    g.dijkstra(0, size / 2);
+
     DisplayingText("BELLMAN-FORD");
     g.bellmanFord(0, size/2, heuristic);
 
@@ -414,11 +347,6 @@ void Test(int size)
 
     g.aStar(0, size / 2, heuristic);
 
-    //DisplayingText("DJIKSTRA");
-    //Djikstra(g, 0, size / 2);
-
-    DisplayingText("DJIKSTRA2");
-    g.dijkstra(0, size / 2);
 }
 
 int main()
@@ -426,18 +354,13 @@ int main()
     setlocale(LC_ALL, "polish");
 
 
-    //Test(100);
-    //Test(500);
-    //Test(1000);
-    //Test(2000);
-    //Test(4000);
-    //Test(10000);
-    //Test(20000);
-
-    Graph g = getGraph(1000000);
-    cout << "NOW" << endl;
-    g.dijkstra(0, 500000);
-
+    Test(100);
+    Test(1000);
+    Test(4000);
+    Test(10000);
+    Test(20000);
+    Test(30000);
+    Test(40000);
 
     return 0;
 }
